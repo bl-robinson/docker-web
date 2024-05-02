@@ -7,3 +7,5 @@ grabs / anirec recordings
 
 /var/www/vhosts/letsencrypt is for certbot... This may not be needed in practice depending on how I end up getting certbot working.
 
+docker build . -t container-registry.k8s.home.blrobinson.uk/docker-web:latest
+docker push container-registry.k8s.home.blrobinson.uk/docker-web:latest
