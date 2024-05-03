@@ -1,7 +1,6 @@
 sites:
   - {
         name: unifi.blrobinson.uk,
-        cert_name: home_default,
         custom_config:
           '
           proxy_set_header   Host             $host;
@@ -31,7 +30,6 @@ sites:
         }
   - {
       name: metrics.blrobinson.uk,
-      cert_name: home_default,
       custom_config:
         '
         location / {
@@ -44,7 +42,6 @@ sites:
       }
   - {
       name: home-assistant.blrobinson.uk,
-      cert_name: home_default,
       custom_config:
         '
         location / {
@@ -60,7 +57,6 @@ sites:
     }
   - {
       name: adguard.blrobinson.uk,
-      cert_name: home_default,
       custom_config:
         '
         location / {
@@ -76,7 +72,6 @@ sites:
     }
   - {
       name: immich.blrobinson.uk,
-      cert_name: home_default,
       custom_config:
         '
         location / {
