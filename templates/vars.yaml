@@ -60,7 +60,7 @@ sites:
       custom_config:
         '
         location / {
-          proxy_pass http://adgaurd.adguard.svc.cluster.local:80;
+          proxy_pass http://adguard.adguard.svc.cluster.local:80;
           resolver 10.96.0.10;
           proxy_set_header Host $host;
           proxy_pass_header Authorization;
