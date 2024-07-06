@@ -1,5 +1,5 @@
 
-FROM dinutac/jinja2docker:2.1.8 as jinja
+FROM dinutac/jinja2docker:2.1.8 AS jinja
 
 COPY templates/site.jinja site.jinja
 COPY templates/vars.yaml vars.yaml

@@ -43,6 +43,16 @@ sites:
       }
       '
   }
+  - {
+    name: grabs.blrobinson.uk,
+    custom_config:
+      '
+      location / {
+        root   /var/www/vhosts/screenshots;
+          try_files $uri index.html index.htm;
+        }
+      '
+  }
   # - {
   #     name: metrics.blrobinson.uk,
   #     custom_config:
