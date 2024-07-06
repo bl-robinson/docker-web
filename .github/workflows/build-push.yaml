@@ -21,6 +21,6 @@ jobs:
           tags: container-registry.k8s.home.blrobinson.uk/docker-web:latest
       - uses: azure/setup-kubectl@v3
       - name: Start Rollout restart
-        run: kubectl rollout restart deployment/web -n web-ingress
+        run: kubectl rollout restart deployment/web -n ingress
       - name: Monitor restart
-        run: kubectl rollout status deployment/web -n web-ingress
+        run: kubectl rollout status deployment/web -n ingress
