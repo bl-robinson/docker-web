@@ -74,6 +74,7 @@ sites:
           proxy_set_header Host $host;
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header X-Forwarded-For $remote_addr;
+          proxy_set_header X-Real-IP $remote_addr;
           resolver 10.96.0.10;
           proxy_pass https://mailu-front.mail.svc.cluster.local:443;
         }
