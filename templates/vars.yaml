@@ -87,7 +87,7 @@ sites:
         location / {
           proxy_pass http://immich-server.immich.svc.cluster.local:3001;
           resolver 10.96.0.10;
-          client_max_body_size 100M;
+          client_max_body_size 2048M;
           proxy_set_header Host $host;
           proxy_pass_header Authorization;
           proxy_set_header Upgrade $http_upgrade;
