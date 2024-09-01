@@ -80,35 +80,19 @@ sites:
         }
         '
       }
-  # - {
-  #     name: home-assistant.blrobinson.uk,
-  #     custom_config:
-  #       '
-  #       location / {
-  #         proxy_pass http://home-assistant.home.blrobinson.uk:8123;
-  #         resolver 10.96.0.10;
-  #         proxy_set_header Host $host;
-  #         proxy_pass_header Authorization;
-  #         proxy_set_header Upgrade $http_upgrade;
-  #         proxy_set_header Connection "upgrade";
-  #         proxy_set_header X-Forwarded-For $remote_addr;
-  #       }
-  #       '
-  #   }
-
-  # - {
-  #     name: immich.blrobinson.uk,
-  #     custom_config:
-  #       '
-  #       location / {
-  #         proxy_pass http://immich.home.blrobinson.uk:2283;
-  #         resolver 10.96.0.10;
-  #         client_max_body_size 100M;
-  #         proxy_set_header Host $host;
-  #         proxy_pass_header Authorization;
-  #         proxy_set_header Upgrade $http_upgrade;
-  #         proxy_set_header Connection "upgrade";
-  #         proxy_set_header X-Forwarded-For $remote_addr;
-  #       }
-  #       '
-  #   }
+  - {
+      name: immich.blrobinson.uk,
+      custom_config:
+        '
+        location / {
+          proxy_pass http://immich-server.immich.svc.cluster.local:3001;
+          resolver 10.96.0.10;
+          client_max_body_size 100M;
+          proxy_set_header Host $host;
+          proxy_pass_header Authorization;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+          proxy_set_header X-Forwarded-For $remote_addr;
+        }
+        '
+    }
