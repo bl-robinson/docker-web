@@ -101,7 +101,7 @@ sites:
       custom_config:
         '
         location / {
-          proxy_pass http://shed-cam:7123;
+          proxy_pass http://shed-cam.home.blrobinson.uk:7123/;
           resolver 10.0.0.102;
           client_max_body_size 2048M;
           proxy_set_header Host $host;
