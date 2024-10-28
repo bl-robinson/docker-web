@@ -128,3 +128,19 @@ sites:
         }
         '
     }
+  - {
+      name: home-assistant.blrobinson.uk,
+      custom_config:
+        '
+        location / {
+          proxy_pass http://home-assistant.home-assistant.svc.cluster.local:8080/;
+          resolver 10.96.0.10;
+          client_max_body_size 2048M;
+          proxy_set_header Host $host;
+          proxy_pass_header Authorization;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+          proxy_set_header X-Forwarded-For $remote_addr;
+        }
+        '
+    }
