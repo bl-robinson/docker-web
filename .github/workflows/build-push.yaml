@@ -8,17 +8,14 @@ on:
 
 jobs:
   docker-build-push:
+    uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-docker-build.yaml@master
+    with:
+      runners: docker-web-runners
+      image: docker-web
+  deploy:
     runs-on: docker-web-runners
+    needs: docker-build-push
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: container-registry.k8s.home.blrobinson.uk/docker-web:latest
       - uses: azure/setup-kubectl@v3
       - name: Start Rollout restart
         run: kubectl rollout restart deployment/web -n ingress
