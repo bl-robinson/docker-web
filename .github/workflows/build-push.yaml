@@ -24,20 +24,23 @@ jobs:
           repository: bl-robinson/home-flux
           path: flux
       - name: Get git shortsha
-        id: vars
-        run: echo "::set-output name=short_sha::sha-$(git rev-parse --short=12 ${{ github.sha }})"
+        id: container-sha
+        run: echo "::set-output name=container-short-sha::sha-$(git rev-parse --short=12 ${{ github.sha }})"
         working-directory: ./flux
       - name: Update Image Ref
         working-directory: ./flux
-        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:${{ steps.vars.outputs.short_sha }}/g' clusters/home/web-ingress/nginx.yaml
+        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:${{ steps.container-sha.outputs.container-short-sha }}/g' clusters/home/web-ingress/nginx.yaml
       - name: Commit change
         working-directory: ./flux
-        run: 'git commit clusters/home/web-ingress/nginx.yaml -m "deploy: Deploying version ${{ steps.vars.outputs.short_sha }}"'
+        run: 'git commit clusters/home/web-ingress/nginx.yaml -m "deploy: Deploying version ${{ steps.container-sha.outputs.container-short-sha }}"'
+      - name: Get Flux Sha
+        id: flux-sha
+        working-directory: ./flux
+        run: echo "::set-output name=flux-sha::$(git rev-parse HEAD)"
       - name: Push Commit
         working-directory: ./flux
         run: git push
-      # - uses: azure/setup-kubectl@v3
-      # - name: Start Rollout restart
-      #   run: kubectl rollout restart deployment/web -n ingress
-      # - name: Monitor restart
-      #   run: kubectl rollout status deployment/web -n ingress
+      - uses: azure/setup-kubectl@v3
+      - name: Wait for Reconcile
+        run: timeout 60s sh -c "until kubectl get ks -n flux-system web-ingress -o json | jq '.status.conditions[0].message' | grep 'Applied revision:' | grep '${{ steps.flux-sha.outputs.flux-sha }}'; do echo 'Waiting for Reconciliation...'; sleep 5; done"
+  
