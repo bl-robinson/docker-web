@@ -25,10 +25,10 @@ jobs:
           path: flux
       - name: Update Image Ref
         working-directory: ./flux
-        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:sha-$(git rev-parse --short ${{ github.sha }})/g' clusters/home/web-ingress/nginx.yaml
+        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:sha-$(git rev-parse --short=12 ${{ github.sha }})/g' clusters/home/web-ingress/nginx.yaml
       - name: Commit change
         working-directory: ./flux
-        run: 'git commit clusters/home/web-ingress/nginx.yaml -m "deploy: Deploying version sha-$(git rev-parse --short ${{ github.sha }})"'
+        run: 'git commit clusters/home/web-ingress/nginx.yaml -m "deploy: Deploying version sha-$(git rev-parse --short=12 ${{ github.sha }})"'
       - name: Push Commit
         working-directory: ./flux
         run: git push
