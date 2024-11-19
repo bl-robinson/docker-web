@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Setup Git
         uses: actions4git/setup-git@v1
+        with:
+          github-token: ${{ secrets.PUSH_TOKEN }}
       - name: Checkout Flux Repo
         uses: actions/checkout@v4
         with:
