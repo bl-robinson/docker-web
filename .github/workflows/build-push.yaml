@@ -21,7 +21,6 @@ jobs:
         with:
           repository: bl-robinson/home-flux
           path: flux
-          token: ${{ secrets.PUSH_TOKEN }}
       - name: Get git shortsha
         id: container-sha
         run: echo "::set-output name=container-short-sha::sha-$(git rev-parse --short=12 ${{ github.sha }})"
@@ -29,6 +28,9 @@ jobs:
       - name: Update Image Ref
         working-directory: ./flux
         run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:${{ steps.container-sha.outputs.container-short-sha }}/g' clusters/home/web-ingress/nginx.yaml
+      - name: Unset existing github auth
+        run: git config --unset-all http.https://github.com/.extraheader
+        working-directory: ./flux
       - name: Setup Git
         uses: actions4git/setup-git@v1
         with:
