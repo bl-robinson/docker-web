@@ -24,10 +24,13 @@ jobs:
           repository: bl-robinson/home-flux
           path: flux
       - name: Update Image Ref
-        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:sha-${{ github.sha }}/g' clusters/home/web-ingress/nginx.yaml
+        working-directory: ./flux
+        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:sha-$(git rev-parse --short ${{ github.sha }})/g' clusters/home/web-ingress/nginx.yaml
       - name: Commit change
-        run: git commit ${{ inputs.deploy-filepath }} -m "deploy: Deploying version sha-${{ github.sha }}"
+        working-directory: ./flux
+        run: 'git commit clusters/home/web-ingress/nginx.yaml -m "deploy: Deploying version sha-$(git rev-parse --short ${{ github.sha }})"'
       - name: Push Commit
+        working-directory: ./flux
         run: git push
       # - uses: azure/setup-kubectl@v3
       # - name: Start Rollout restart
