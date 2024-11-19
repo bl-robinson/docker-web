@@ -16,6 +16,9 @@ jobs:
     runs-on: docker-web-runners
     needs: docker-build-push
     steps:
+      - name: Get git shortsha
+        id: vars
+        run: ::set-output name=short_sha::$(git rev-parse --short=12 ${{ github.sha }})
       - name: Setup Git
         uses: actions4git/setup-git@v1
       - name: Checkout Flux Repo
@@ -25,10 +28,10 @@ jobs:
           path: flux
       - name: Update Image Ref
         working-directory: ./flux
-        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:sha-$(git rev-parse --short=12 ${{ github.sha }})/g' clusters/home/web-ingress/nginx.yaml
+        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:sha-${{ steps.vars.outputs.short_sha }}/g' clusters/home/web-ingress/nginx.yaml
       - name: Commit change
         working-directory: ./flux
-        run: 'git commit clusters/home/web-ingress/nginx.yaml -m "deploy: Deploying version sha-$(git rev-parse --short=12 ${{ github.sha }})"'
+        run: 'git commit clusters/home/web-ingress/nginx.yaml -m "deploy: Deploying version sha-${{ steps.vars.outputs.short_sha }}"'
       - name: Push Commit
         working-directory: ./flux
         run: git push
