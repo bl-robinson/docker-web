@@ -33,6 +33,7 @@ jobs:
         uses: actions4git/setup-git@v1
         with:
           github-token: ${{ secrets.PUSH_TOKEN }}
+          safe-directory: ./flux
       - name: Commit change
         working-directory: ./flux
         run: 'git commit clusters/home/web-ingress/nginx.yaml -m "deploy: Deploying version ${{ steps.container-sha.outputs.container-short-sha }}"'
