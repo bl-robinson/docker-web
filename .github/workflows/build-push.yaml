@@ -21,12 +21,8 @@ jobs:
         with:
           repository: bl-robinson/home-flux
           path: flux
-      - name: Get git shortsha
-        id: container-sha
-        run: echo "CONTAINER_SHORT_SHA=sha-$(git rev-parse --short=12 ${{ github.sha }})" >> "$GITHUB_OUTPUT"
-        working-directory: ./flux
       - name: Update Image Ref
-        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:${{ steps.container-sha.outputs.CONTAINER_SHORT_SHA }}/g' clusters/home/web-ingress/nginx.yaml
+        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/${{ needs.docker-build-push.outputs.tags }}/g' clusters/home/web-ingress/nginx.yaml
         working-directory: ./flux
       - name: Unset existing github auth
         # This step is needed as GHA auto sets some config which the setup-git action below does not clear. Need to raise an issue there.
