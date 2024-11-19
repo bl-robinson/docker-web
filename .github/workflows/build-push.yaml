@@ -16,8 +16,21 @@ jobs:
     runs-on: docker-web-runners
     needs: docker-build-push
     steps:
-      - uses: azure/setup-kubectl@v3
-      - name: Start Rollout restart
-        run: kubectl rollout restart deployment/web -n ingress
-      - name: Monitor restart
-        run: kubectl rollout status deployment/web -n ingress
+      - name: Setup Git
+        uses: actions4git/setup-git@v1
+      - name: Checkout Flux Repo
+        uses: actions/checkout@v4
+        with:
+          repository: bl-robinson/home-flux
+          path: flux
+      - name: Update Image Ref
+        run: sed -i -e 's/\(container-registry.k8s.home.blrobinson.uk\/docker-web\):\(.*\)/\1:sha-${{ github.sha }}/g' clusters/home/web-ingress/nginx.yaml
+      - name: Commit change
+        run: git commit ${{ inputs.deploy-filepath }} -m "deploy: Deploying version sha-${{ github.sha }}"
+      - name: Push Commit
+        run: git push
+      # - uses: azure/setup-kubectl@v3
+      # - name: Start Rollout restart
+      #   run: kubectl rollout restart deployment/web -n ingress
+      # - name: Monitor restart
+      #   run: kubectl rollout status deployment/web -n ingress
