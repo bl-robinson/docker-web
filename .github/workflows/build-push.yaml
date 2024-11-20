@@ -20,10 +20,16 @@ jobs:
       runners: docker-web-runners
       old-image: container-registry.k8s.home.blrobinson.uk/docker-web
       deploy-image: ${{ needs.docker-build-push.outputs.tags }}
-      namespace: ingress
-      deployment-name: web
-      kustomization: web-ingress
       flux-file: clusters/home/web-ingress/nginx.yaml
+  monitor-deploy:
+    uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-wait-for-deploy.yaml@master
+    needs: deploy
+    with:
+      runners: docker-web-runners
+      namespace: ingress
+      kustomization: web-ingress
+      deployment-name: web
+      flux-sha:
   revert:
     uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-flux-deploy.yaml@master
     if: ${{ always() && needs.deploy.result == 'failure' }}
@@ -33,6 +39,12 @@ jobs:
       runners: docker-web-runners
       revert: true
       revert-sha: ${{ needs.deploy.outputs.deploy-sha }}
+  monitor-revert:
+    uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-wait-for-deploy.yaml@master
+    needs: revert
+    with:
+      runners: docker-web-runners
       namespace: ingress
       kustomization: web-ingress
       deployment-name: web
+      flux-sha: ${{ needs.revert.outputs.deploy-sha }}
