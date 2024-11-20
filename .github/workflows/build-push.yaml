@@ -15,6 +15,7 @@ jobs:
   deploy:
     uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-flux-deploy.yaml@master
     secrets: inherit
+    needs: docker-build-push
     with:
       runners: docker-web-runners
       old-image: container-registry.k8s.home.blrobinson.uk/docker-web
