@@ -61,6 +61,7 @@ jobs:
         with:
           repository: bl-robinson/home-flux
           path: flux
+          fetch-depth: 0
       - name: Unset existing github auth
         # This step is needed as GHA auto sets some config which the setup-git action below does not clear. Need to raise an issue there.
         run: git config --unset-all http.https://github.com/.extraheader
