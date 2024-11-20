@@ -35,7 +35,7 @@ jobs:
           safe-directory: ./flux
       - name: Commit change
         working-directory: ./flux
-        run: 'git commit clusters/home/web-ingress/nginx.yaml -m "deploy: Deploying version ${{ steps.container-sha.outputs.CONTAINER_SHORT_SHA }}"'
+        run: 'git commit clusters/home/web-ingress/nginx.yaml -m "deploy: Deploying version ${{ needs.docker-build-push.outputs.tags }}"'
       - name: Get Flux Sha
         id: flux-sha
         working-directory: ./flux
