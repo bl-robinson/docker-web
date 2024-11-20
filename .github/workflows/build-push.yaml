@@ -29,7 +29,7 @@ jobs:
       namespace: ingress
       kustomization: web-ingress
       deployment-name: web
-      flux-sha:
+      flux-sha: ${{ needs.deploy.outputs.deploy-sha }}
   revert:
     uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-flux-deploy.yaml@master
     if: ${{ always() && needs.monitor-deploy.result == 'failure' }}
