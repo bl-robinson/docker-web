@@ -14,6 +14,8 @@ jobs:
       image: docker-web
   deploy:
     runs-on: docker-web-runners
+    outputs:
+      deploy-sha: ${{ steps.flux-sha.outputs.FLUX_SHA }}
     needs: docker-build-push
     steps:
       - name: Checkout Flux Repo
@@ -47,3 +49,40 @@ jobs:
       - name: Wait for Reconcile
         # I don't really like this line... but it'll do the job... (probably)
         run: timeout 60s sh -c "until kubectl get ks -n ingress web-ingress -o json | jq '.status.conditions[0].message' | grep 'Applied revision:' | grep '${{ steps.flux-sha.outputs.FLUX_SHA }}'; do echo 'Waiting for Reconciliation...'; sleep 5; done"
+      - name: Monitor Deployment
+        run: kubectl rollout status -n ingress deploy/web --timeout 5m
+  revert:
+    runs-on: docker-web-runners
+    needs: deploy
+    if: ${{ always() && needs.deploy.result == 'failure' }}
+    steps:
+      - name: Checkout Flux Repo
+        uses: actions/checkout@v4
+        with:
+          repository: bl-robinson/home-flux
+          path: flux
+      - name: Unset existing github auth
+        # This step is needed as GHA auto sets some config which the setup-git action below does not clear. Need to raise an issue there.
+        run: git config --unset-all http.https://github.com/.extraheader
+        working-directory: ./flux
+      - name: Setup Git
+        uses: actions4git/setup-git@v1
+        with:
+          github-token: ${{ secrets.PUSH_TOKEN }}
+          safe-directory: ./flux
+      - name: Revert Commit
+        working-directory: ./flux
+        run: 'git revert ${{ needs.deploy.outputs.deploy-sha }}'
+      - name: Get Flux Sha
+        id: flux-sha
+        working-directory: ./flux
+        run: echo "FLUX_SHA=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Push Commit
+        working-directory: ./flux
+        run: git push
+      - uses: azure/setup-kubectl@v3
+      - name: Wait for Reconcile
+        # I don't really like this line... but it'll do the job... (probably)
+        run: timeout 60s sh -c "until kubectl get ks -n ingress web-ingress -o json | jq '.status.conditions[0].message' | grep 'Applied revision:' | grep '${{ steps.flux-sha.outputs.FLUX_SHA }}'; do echo 'Waiting for Reconciliation...'; sleep 5; done"
+      - name: Monitor Deployment
+        run: kubectl rollout status -n ingress deploy/web --timeout 5m
