@@ -44,6 +44,7 @@ jobs:
   monitor-revert:
     uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-wait-for-deploy.yaml@master
     needs: revert
+    if: ${{ always() && needs.revert.result == 'success' }}
     with:
       runners: docker-web-runners
       namespace: ingress
