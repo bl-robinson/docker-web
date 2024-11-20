@@ -77,6 +77,8 @@ jobs:
         id: flux-sha
         working-directory: ./flux
         run: echo "FLUX_SHA=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Sleep
+        run: sleep 3600
       # - name: Push Commit
       #   working-directory: ./flux
       #   run: git push
