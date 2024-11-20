@@ -32,9 +32,11 @@ jobs:
       flux-sha:
   revert:
     uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-flux-deploy.yaml@master
-    if: ${{ always() && needs.deploy.result == 'failure' }}
+    if: ${{ always() && needs.monitor-deploy.result == 'failure' }}
     secrets: inherit
-    needs: deploy
+    needs:
+      - deploy
+      - monitor-deploy
     with:
       runners: docker-web-runners
       revert: true
