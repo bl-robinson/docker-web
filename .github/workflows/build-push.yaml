@@ -30,6 +30,7 @@ jobs:
       kustomization: web-ingress
       deployment-name: web
       flux-sha: ${{ needs.deploy.outputs.deploy-sha }}
+      timeout: 1m
   revert:
     uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-flux-deploy.yaml@master
     if: ${{ always() && needs.monitor-deploy.result == 'failure' }}
