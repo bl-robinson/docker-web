@@ -13,11 +13,42 @@ jobs:
       runners: docker-web-runners
       image: docker-web
   deploy:
-    runs-on: docker-web-runners
+    uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-flux-deploy.yaml@master
+    secrets: inherit
     needs: docker-build-push
-    steps:
-      - uses: azure/setup-kubectl@v3
-      - name: Start Rollout restart
-        run: kubectl rollout restart deployment/web -n ingress
-      - name: Monitor restart
-        run: kubectl rollout status deployment/web -n ingress
+    with:
+      runners: docker-web-runners
+      old-image: container-registry.k8s.home.blrobinson.uk/docker-web
+      deploy-image: ${{ needs.docker-build-push.outputs.tags }}
+      flux-file: clusters/home/web-ingress/nginx.yaml
+  monitor-deploy:
+    uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-wait-for-deploy.yaml@master
+    needs: deploy
+    with:
+      runners: docker-web-runners
+      namespace: ingress
+      kustomization: web-ingress
+      deployment-name: web
+      flux-sha: ${{ needs.deploy.outputs.deploy-sha }}
+      timeout: 1m
+  revert:
+    uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-flux-deploy.yaml@master
+    if: ${{ always() && needs.monitor-deploy.result == 'failure' }}
+    secrets: inherit
+    needs:
+      - deploy
+      - monitor-deploy
+    with:
+      runners: docker-web-runners
+      revert: true
+      revert-sha: ${{ needs.deploy.outputs.deploy-sha }}
+  monitor-revert:
+    uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-wait-for-deploy.yaml@master
+    needs: revert
+    if: ${{ always() && needs.revert.result == 'success' }}
+    with:
+      runners: docker-web-runners
+      namespace: ingress
+      kustomization: web-ingress
+      deployment-name: web
+      flux-sha: ${{ needs.revert.outputs.deploy-sha }}
