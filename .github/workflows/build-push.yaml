@@ -33,3 +33,6 @@ jobs:
       runners: docker-web-runners
       revert: true
       revert-sha: ${{ needs.deploy.outputs.deploy-sha }}
+      namespace: ingress
+      kustomization: web-ingress
+      deployment-name: web
