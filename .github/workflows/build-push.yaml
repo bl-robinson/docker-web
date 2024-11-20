@@ -46,4 +46,4 @@ jobs:
       - uses: azure/setup-kubectl@v3
       - name: Wait for Reconcile
         # I don't really like this line... but it'll do the job... (probably)
-        run: timeout 60s sh -c "until kubectl get ks -n flux-system web-ingress -o json | jq '.status.conditions[0].message' | grep 'Applied revision:' | grep '${{ steps.flux-sha.outputs.FLUX_SHA }}'; do echo 'Waiting for Reconciliation...'; sleep 5; done"
+        run: timeout 60s sh -c "until kubectl get ks -n ingress web-ingress -o json | jq '.status.conditions[0].message' | grep 'Applied revision:' | grep '${{ steps.flux-sha.outputs.FLUX_SHA }}'; do echo 'Waiting for Reconciliation...'; sleep 5; done"
