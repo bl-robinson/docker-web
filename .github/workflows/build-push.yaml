@@ -23,39 +23,13 @@ jobs:
       namespace: ingress
       deployment-name: web
       kustomization: web-ingress
+      flux-file: clusters/home/web-ingress/nginx.yaml
   revert:
-    runs-on: docker-web-runners
-    needs: deploy
+    uses: bl-robinson/gha-shared-workflows/.github/workflows/re-usable-flux-deploy.yaml@master
     if: ${{ always() && needs.deploy.result == 'failure' }}
-    steps:
-      - name: Checkout Flux Repo
-        uses: actions/checkout@v4
-        with:
-          repository: bl-robinson/home-flux
-          path: flux
-          fetch-depth: 0 # Need to fetch more of the structure so we don't erase on revert.
-      - name: Unset existing github auth
-        # This step is needed as GHA auto sets some config which the setup-git action below does not clear. Need to raise an issue there.
-        run: git config --unset-all http.https://github.com/.extraheader
-        working-directory: ./flux
-      - name: Setup Git
-        uses: actions4git/setup-git@v1
-        with:
-          github-token: ${{ secrets.PUSH_TOKEN }}
-          safe-directory: ./flux
-      - name: Revert Commit
-        working-directory: ./flux
-        run: 'git revert ${{ needs.deploy.outputs.deploy-sha }} --no-edit'
-      - name: Get Flux Sha
-        id: flux-sha
-        working-directory: ./flux
-        run: echo "FLUX_SHA=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-      - name: Push Commit
-        working-directory: ./flux
-        run: git push
-      - uses: azure/setup-kubectl@v3
-      - name: Wait for Reconcile
-        # I don't really like this line... but it'll do the job... (probably)
-        run: timeout 120s sh -c "until kubectl get ks -n ingress web-ingress -o json | jq '.status.conditions[0].message' | grep 'Applied revision:' | grep '${{ steps.flux-sha.outputs.FLUX_SHA }}'; do echo 'Waiting for Reconciliation...'; sleep 5; done"
-      - name: Monitor Deployment
-        run: kubectl rollout status -n ingress deploy/web --timeout 5m
+    secrets: inherit
+    needs: deploy
+    with:
+      runners: docker-web-runners
+      revert: true
+      revert-sha: ${{ needs.deploy.outputs.deploy-sha }}
