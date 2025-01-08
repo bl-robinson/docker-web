@@ -4,7 +4,7 @@ server {
         server_name {{ item.name }};
 
         location / {
-            rewrite ^ https://{{ item.name }};
+            rewrite ^ https://{{ item.name }}$request_uri;
         }
 
         location ^~ /.well-known {
