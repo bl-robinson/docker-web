@@ -40,21 +40,6 @@ sites:
           '
         }
   - {
-    name: adguard.blrobinson.uk,
-    custom_config:
-      '
-      location / {
-        proxy_pass http://adguard.adguard.svc.cluster.local:80;
-        resolver 10.96.0.10;
-        proxy_set_header Host $host;
-        proxy_pass_header Authorization;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header X-Forwarded-For $remote_addr;
-      }
-      '
-  }
-  - {
     name: grabs.blrobinson.uk,
     custom_config:
       '
@@ -81,60 +66,12 @@ sites:
         '
       }
   - {
-      name: immich.blrobinson.uk,
-      custom_config:
-        '
-        location / {
-          proxy_pass http://immich-server.immich.svc.cluster.local:2283;
-          resolver 10.96.0.10;
-          client_max_body_size 2048M;
-          proxy_set_header Host $host;
-          proxy_pass_header Authorization;
-          proxy_set_header Upgrade $http_upgrade;
-          proxy_set_header Connection "upgrade";
-          proxy_set_header X-Forwarded-For $remote_addr;
-        }
-        '
-    }
-  - {
       name: shed-cam.blrobinson.uk,
       custom_config:
         '
         location / {
           proxy_pass http://10.0.0.2:7123/;
           resolver 10.0.0.102;
-          client_max_body_size 2048M;
-          proxy_set_header Host $host;
-          proxy_pass_header Authorization;
-          proxy_set_header Upgrade $http_upgrade;
-          proxy_set_header Connection "upgrade";
-          proxy_set_header X-Forwarded-For $remote_addr;
-        }
-        '
-    }
-  - {
-      name: foundry.blrobinson.uk,
-      custom_config:
-        '
-        location / {
-          proxy_pass http://foundry-foundry-vtt.foundry.svc.cluster.local/;
-          resolver 10.96.0.10;
-          client_max_body_size 2048M;
-          proxy_set_header Host $host;
-          proxy_pass_header Authorization;
-          proxy_set_header Upgrade $http_upgrade;
-          proxy_set_header Connection "upgrade";
-          proxy_set_header X-Forwarded-For $remote_addr;
-        }
-        '
-    }
-  - {
-      name: home-assistant.blrobinson.uk,
-      custom_config:
-        '
-        location / {
-          proxy_pass http://home-assistant.home-assistant.svc.cluster.local:8080/;
-          resolver 10.96.0.10;
           client_max_body_size 2048M;
           proxy_set_header Host $host;
           proxy_pass_header Authorization;
