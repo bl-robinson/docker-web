@@ -7,7 +7,7 @@ COPY templates/vars.yaml vars.yaml
 RUN jinja2 site.jinja vars.yaml > site.conf
 
 
-FROM nginx:1.26
+FROM nginx:1.30
 
 COPY config/nginx.conf /etc/nginx/
 COPY --from=jinja site.conf /etc/nginx/sites-available/site.conf
